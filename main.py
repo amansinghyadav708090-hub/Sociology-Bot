@@ -1,1 +1,42 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkupfrom telegram.ext import ApplicationBuilder, CommandHandler, ContextTypesimport osimport loggingfrom flask import Flaskfrom threading import Threadlogging.basicConfig(level=logging.INFO)TOKEN = "7542764200:AAEf2138dCdQ4zYJo9okgPP-WV86EjiomTs"CHANNEL = "@sociologycanvas"PDF_FILE = "foundation_to_sociology_revision.pdf"# Flask server for uptimeflask_app = Flask(__name__)@flask_app.route('/')def home():    return "Bot is running"def run():    port = int(os.environ.get("PORT", 8080))    flask_app.run(host="0.0.0.0", port=port)def keep_alive():    t = Thread(target=run)    t.start()# Start commandasync def start(update: Update, context: ContextTypes.DEFAULT_TYPE):    user_id = update.effective_user.id    user_name = update.effective_user.first_name    try:        member = await context.bot.get_chat_member(CHANNEL, user_id)        # If user joined channel        if member.status in ["member", "administrator", "creator"]:            if os.path.exists(PDF_FILE):                with open(PDF_FILE, "rb") as pdf:                    await update.message.reply_document(pdf)            else:                await update.message.reply_text("PDF file not found.")        else:            keyboard = [[                InlineKeyboardButton(                    "?? Join Sociology Canvas",                    url="https://t.me/sociologycanvas"                )            ]]            reply_markup = InlineKeyboardMarkup(keyboard)            await update.message.reply_text(                f"""Hello {user_name}?? To get the PDF1?? Join the channel  2?? After joining send /start againThe PDF will be sent automatically.""",                reply_markup=reply_markup            )    except Exception as e:        logging.error(e)if __name__ == "__main__":    keep_alive()    app = ApplicationBuilder().token(TOKEN).build()    app.add_handler(CommandHandler("start", start))    print("Bot is running...")    app.run_polling()
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import logging
+from flask import Flask
+from threading import Thread
+import os
+
+logging.basicConfig(level=logging.INFO)
+
+TOKEN = "YOUR_TOKEN"
+
+flask_app = Flask(__name__)
+
+@flask_app.route("/")
+def home():
+    return "Bot is running"
+
+
+def run():
+    port = int(os.environ.get("PORT", 8080))
+    flask_app.run(host="0.0.0.0", port=port)
+
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Bot is working!")
+
+
+if __name__ == "__main__":
+    keep_alive()
+
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+
+    print("Bot started")
+
+    app.run_polling()
