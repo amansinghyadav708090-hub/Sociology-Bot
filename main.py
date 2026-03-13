@@ -7,7 +7,7 @@ import os
 
 logging.basicConfig(level=logging.INFO)
 
-TOKEN = "YOUR_TOKEN"
+TOKEN = "7542764200:AAEf2138dCdQ4zYJo9okgPP-WV86EjiomTs"
 
 flask_app = Flask(__name__)
 
