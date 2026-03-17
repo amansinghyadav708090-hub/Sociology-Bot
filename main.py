@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from flask import Flask
 from threading import Thread
 from telegram import Update
@@ -14,13 +15,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # -------- BOT FUNCTION --------
 def run_bot():
-    app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
+    async def bot():
+        app = ApplicationBuilder().token(TOKEN).build()
+        app.add_handler(CommandHandler("start", start))
+        print("Bot started...")
+        await app.run_polling()
 
-    print("Bot started...")
-    app.run_polling()
+    asyncio.run(bot())
 
-# -------- FLASK SERVER --------
+# -------- WEB SERVER --------
 web_app = Flask(__name__)
 
 @web_app.route("/")
