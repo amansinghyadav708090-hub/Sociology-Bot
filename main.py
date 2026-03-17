@@ -1,31 +1,65 @@
+import os
+import logging
+from flask import Flask
+from threading import Thread
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-import logging
 
-# Enable logging
+# ---------------- LOGGING ----------------
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
 
-# Your bot token
-TOKEN = "8608967851:AAE5heiMgTXWR7kqfgekaAfsOyZLNdDqjqo"
+# ---------------- TOKEN ----------------
+TOKEN = "8608967851:AAGLF3tIJ_ar8J9RKuCDoqv8E7SvzY8-hjg"
 
-# /start command
+# ---------------- TELEGRAM COMMANDS ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ Bot is working!")
+    await update.message.reply_text(
+        "✅ Hello!\n\n"
+        "This is *The Sociology Bot* 📚\n\n"
+        "Use /help to see commands.",
+        parse_mode="Markdown"
+    )
 
-def main():
-    # Build application
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📚 Available Commands:\n\n"
+        "/start - Start the bot\n"
+        "/help - Show commands\n"
+        "/about - About this bot"
+    )
+
+async def about(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🤖 The Sociology Bot\n\n"
+        "Designed for NET & CUET PG Sociology preparation."
+    )
+
+# ---------------- TELEGRAM BOT ----------------
+def run_bot():
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # Add command handler
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("about", about))
 
-    print("🚀 Bot started successfully")
+    print("🚀 Telegram bot started")
 
-    # Start polling
     app.run_polling()
 
+# ---------------- FLASK SERVER ----------------
+web_app = Flask(__name__)
+
+@web_app.route("/")
+def home():
+    return "Bot is running successfully!"
+
+# ---------------- MAIN ----------------
 if __name__ == "__main__":
-    main()
+    bot_thread = Thread(target=run_bot)
+    bot_thread.start()
+
+    port = int(os.environ.get("PORT", 10000))
+    web_app.run(host="0.0.0.0", port=port)
