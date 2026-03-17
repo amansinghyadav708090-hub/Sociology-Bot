@@ -1,42 +1,31 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import logging
-from flask import Flask
-from threading import Thread
-import os
 
-logging.basicConfig(level=logging.INFO)
+# Enable logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
+# Paste your NEW token here (from BotFather)
 TOKEN = "8608967851:AAGLF3tIJ_ar8J9RKuCDoqv8E7SvzY8-hjg"
 
-flask_app = Flask(__name__)
-
-@flask_app.route("/")
-def home():
-    return "Bot is running"
-
-
-def run():
-    port = int(os.environ.get("PORT", 8080))
-    flask_app.run(host="0.0.0.0", port=port)
-
-
-def keep_alive():
-    t = Thread(target=run)
-    t.start()
-
-
+# Start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Bot is working!")
 
+def main():
+    # Build application with concurrent updates for faster responses
+    app = ApplicationBuilder().token(TOKEN).concurrent_updates(True).build()
 
-if __name__ == "__main__":
-    keep_alive()
-
-    app = ApplicationBuilder().token(TOKEN).build()
-
+    # Command handler
     app.add_handler(CommandHandler("start", start))
 
-    print("Bot started")
+    print("Bot started successfully")
 
+    # Start polling
     app.run_polling()
+
+if __name__ == "__main__":
+    main()
