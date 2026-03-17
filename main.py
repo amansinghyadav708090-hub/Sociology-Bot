@@ -8,21 +8,21 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-# Paste your NEW token here (from BotFather)
+# Your bot token
 TOKEN = "8608967851:AAGLF3tIJ_ar8J9RKuCDoqv8E7SvzY8-hjg"
 
-# Start command
+# /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Bot is working!")
+    await update.message.reply_text("✅ Bot is working!")
 
 def main():
-    # Build application with concurrent updates for faster responses
-    app = ApplicationBuilder().token(TOKEN).concurrent_updates(True).build()
+    # Build application
+    app = ApplicationBuilder().token(TOKEN).build()
 
-    # Command handler
+    # Add command handler
     app.add_handler(CommandHandler("start", start))
 
-    print("Bot started successfully")
+    print("🚀 Bot started successfully")
 
     # Start polling
     app.run_polling()
